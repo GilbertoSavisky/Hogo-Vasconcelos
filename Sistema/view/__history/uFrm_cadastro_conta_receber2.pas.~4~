@@ -1,0 +1,143 @@
+unit uFrm_cadastro_conta_receber2;
+
+interface
+
+uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uDM, uFrm_cadastro_conta_pagar,
+    Data.DB, Datasnap.DBClient, System.Actions, Vcl.ActnList, System.ImageList,
+    Vcl.ImgList, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids,
+    Vcl.DBGrids,
+    Vcl.ExtCtrls;
+
+type
+    Tfrm_cadastro_contas_pagar2 = class(Tfrm_cadastro_contas_pagar)
+        procedure btn_filtrarClick(Sender: TObject);
+        procedure act_postExecute(Sender: TObject);
+    private
+        { Private declarations }
+    public
+        { Public declarations }
+    end;
+
+var
+    frm_cadastro_contas_pagar2: Tfrm_cadastro_contas_pagar2;
+
+implementation
+
+{$R *.dfm}
+
+procedure Tfrm_cadastro_contas_pagar2.act_postExecute(Sender: TObject);
+var
+    i, prox: Integer;
+begin
+    for i := ComponentCount - 1 downto 0 do
+    begin
+        if (Components[i] is TEdit) then
+        begin
+            if (((Components[i] as TEdit).Text = '') and
+              not((Components[i] as TEdit).Name = 'edt_pesquisar')) then
+            begin
+                Application.MessageBox('Existe(m) campo(s) vazio(s), ' + #13 +
+                  'Favor preencher!', 'Atenção', MB_OK + MB_ICONWARNING);
+                (Components[i] as TEdit).SetFocus;
+                Abort;
+            end;
+
+        end;
+
+    end;
+
+    try
+        CDS_parcelas.First;
+
+        while not CDS_parcelas.Eof do
+            if DS_parcelas.State in [dsBrowse, dsInsert] then
+            begin
+                dm_1.CDS_contas_receber.First;
+                prox := dm_1.CDS_contas_receber.Fields[0].AsInteger + 1;
+
+                if not dm_1.CDS_contas_receber.Active then
+                    dm_1.CDS_contas_receber.Open;
+                dm_1.CDS_contas_receber.Append;
+                dm_1.cntRcb_id.AsInteger := prox;
+
+                dm_1.cntRcb_documento.AsString :=
+                  Trim(edt_num_doc.Text);
+                dm_1.cntRcb_descricao.AsString :=
+                  Trim(edt_descricao.Text);
+                dm_1.cntRcb_parcela.AsInteger :=
+                  CDS_parcelasParcela.AsInteger;
+                dm_1.cntRcb_vlr_parcela.AsCurrency :=
+                  CDS_parcelasValor.AsFloat;
+                dm_1.cntRcb_vlr_compra.AsCurrency :=
+                  StrToFloat(edt_vl_compra.Text);
+                dm_1.cntRcb_dt_compra.AsDateTime :=
+                  StrToDate(edt_dt_compra.Text);
+                dm_1.cntRcb_dty_vencimento.AsDateTime :=
+                  CDS_parcelasVencimento.AsDateTime;
+                dm_1.CDS_contas_recebercntPg_status.AsString := 'A';
+                dm_1.CDS_contas_recebercntPg_dt_cadastro.AsDateTime :=
+                  StrToDate(edt_dt_compra.Text);
+                dm_1.CDS_contas_recebercntPg_vlr_abatido.AsCurrency := 0;
+                dm_1.CDS_contas_recebercntPg_dt_pagamento.AsDateTime := Now;
+
+                dm_1.CDS_contas_receber.Post;
+                dm_1.CDS_contas_receber.ApplyUpdates(0);
+
+                CDS_parcelas.Next;
+            end;
+        if dm_1.CDS_contas_receber.ApplyUpdates(0) = 0 then
+            Application.MessageBox('Registro Inserido com Sucesso!',
+              'Informação', MB_OK + MB_ICONINFORMATION);
+
+        dm_1.CDS_contas_receber.Open;
+
+        for i := 0 to ComponentCount - 1 do
+        begin
+            if Components[i] is TCustomEdit then
+                TCustomEdit(Components[i]).Clear;
+        end;
+        if pageControl_1.ActivePage = tbs_cadastro then
+        begin
+            tbs_cadastro.TabVisible := false;
+            pageControl_1.ActivePage := tbs_pesquisa;
+        end;
+        edt_pesquisar.SetFocus;
+
+        CDS_parcelas.EmptyDataSet;
+
+    except
+        on E: Exception do
+            raise Exception.Create('Erro ao Salvar Registro: ' + E.Message);
+
+    end;
+
+end;
+
+procedure Tfrm_cadastro_contas_pagar2.btn_filtrarClick(Sender: TObject);
+begin
+    if edt_pesquisar.Text = '' then
+    begin
+        Application.MessageBox('Informe um Valor a ser Pesquisado!', 'Atenção!',
+          MB_OK + MB_ICONWARNING);
+        edt_pesquisar.SetFocus;
+        Abort;
+    end;
+    inherited;
+    dm_1.CDS_contas_receber.Close;
+    case cbx_filtros.ItemIndex of
+        0:
+            dm_1.CDS_contas_receber.CommandText :=
+              'select * from contas_pagar where cntRcb_documento like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+        1:
+            dm_1.CDS_contas_receber.CommandText :=
+              'select * from contas_pagar where cntRcb_descricao like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+    end;
+    dm_1.CDS_contas_receber.Open;
+end;
+
+end.

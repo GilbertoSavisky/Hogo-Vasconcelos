@@ -1,0 +1,27 @@
+unit udm_Relatorio;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, uDM, frxClass, frxDBSet;
+
+type
+  TDataModule1 = class(TDataModule)
+    dm_relatorios: TfrxReport;
+    frxDBDataset1: TfrxDBDataset;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataModule1: TDataModule1;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

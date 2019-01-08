@@ -1,0 +1,124 @@
+unit uFrm_cadastro_caixa;
+
+interface
+
+uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrm_cadastro_basico, Data.DB,
+    System.Actions, Vcl.ActnList, System.ImageList, Vcl.ImgList, Vcl.StdCtrls,
+    Vcl.ComCtrls, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, Vcl.ExtCtrls, uDM,
+    unt_funcoes, Math, Vcl.Mask;
+
+type
+    Tfrm_cadastro_caixa = class(Tfrm_cadastro_basico)
+        Label1: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        edt_num_doc: TEdit;
+        edt_descricao: TEdit;
+        rg_tipo: TRadioGroup;
+    edt_valor: TEdit;
+
+        procedure act_postExecute(Sender: TObject);
+        procedure act_pesquisarExecute(Sender: TObject);
+        procedure act_editExecute(Sender: TObject);
+        procedure btn_filtrarClick(Sender: TObject);
+        // edt_valor: TtpEdit;
+    private
+        { Private declarations }
+    public
+        { Public declarations }
+    end;
+
+var
+    frm_cadastro_caixa: Tfrm_cadastro_caixa;
+
+implementation
+
+{$R *.dfm}
+
+procedure Tfrm_cadastro_caixa.act_editExecute(Sender: TObject);
+begin
+    inherited;
+    edt_num_doc.Text := dm_1.CDS_caixacx_num_doc.AsString;
+    edt_descricao.Text := dm_1.CDS_caixacx_descricao.AsString;
+    edt_valor.Text := FormatFloat(',#0.00',
+      dm_1.CDS_caixacx_valor.AsCurrency);
+    rg_tipo.ItemIndex :=
+      ifthen(dm_1.CDS_caixacx_tipo.AsString = 'C', 0, 1);
+
+end;
+
+procedure Tfrm_cadastro_caixa.act_pesquisarExecute(Sender: TObject);
+begin
+    dm_1.CDS_caixa.Close;
+    dm_1.CDS_caixa.CommandText := 'select * from caixa';
+    dm_1.CDS_caixa.Open;
+    inherited;
+end;
+
+procedure Tfrm_cadastro_caixa.act_postExecute(Sender: TObject);
+begin
+    if (Trim(edt_num_doc.Text) = '') or (Trim(edt_descricao.Text) = '') then
+    begin
+        Application.MessageBox('Existe(m) campo(s) vazio(s)! ' + #13 +
+          'Por Favor Preencha.', 'Atenção', MB_OK + MB_ICONWARNING);
+        if (Trim(edt_num_doc.Text) = '') then
+            edt_num_doc.SetFocus
+        else
+            edt_descricao.SetFocus;
+        abort;
+    end;
+
+    if StringToFloat(edt_valor.Text) <= 0 then
+    begin
+        Application.MessageBox('Preeencha um valor maior que 0! ' + #13 +
+          'Por Favor Preencha.', 'Atenção', MB_OK + MB_ICONWARNING);
+        edt_valor.SetFocus;
+        abort;
+    end;
+
+    if dataSource_tabela.State in [dsInsert] then
+        dm_1.CDS_caixacx_id.AsInteger := get_id('cx_id', 'caixa');
+    dm_1.CDS_caixacx_num_doc.AsString := Trim(edt_num_doc.Text);
+    dm_1.CDS_caixacx_descricao.AsString := Trim(edt_descricao.Text);
+    dm_1.CDS_caixacx_valor.AsCurrency := StringToFloat(edt_valor.Text);
+    case rg_tipo.ItemIndex of
+        0:
+            dm_1.CDS_caixacx_tipo.AsString := 'C';
+        1:
+            dm_1.CDS_caixacx_tipo.AsString := 'D';
+    end;
+    dm_1.CDS_caixacx_data_cadastro.AsDateTime := Now;
+    inherited;
+
+end;
+
+procedure Tfrm_cadastro_caixa.btn_filtrarClick(Sender: TObject);
+begin
+    if edt_pesquisar.Text = '' then
+    begin
+        Application.MessageBox('Informe um valor a ser pesquisado', 'Atenção!',
+          MB_OK + MB_ICONWARNING);
+        edt_pesquisar.SetFocus;
+        abort;
+    end;
+    inherited;
+    dm_1.CDS_caixa.Close;
+    case cbx_filtros.ItemIndex of
+        0:
+            dm_1.CDS_caixa.CommandText :=
+              'select * from caixa where cx_num_doc like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+        1:
+            dm_1.CDS_caixa.CommandText :=
+              'select * from caixa where cx_descricao like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+    end;
+    dm_1.CDS_caixa.Open;
+end;
+
+
+
+end.

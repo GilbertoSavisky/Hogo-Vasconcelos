@@ -1,0 +1,53 @@
+unit uFrm_cadastro_conta_receber2;
+
+interface
+
+uses
+    Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+    System.Classes, Vcl.Graphics,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uDM, uFrm_cadastro_conta_pagar,
+  Data.DB, Datasnap.DBClient, System.Actions, Vcl.ActnList, System.ImageList,
+  Vcl.ImgList, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids, Vcl.DBGrids,
+  Vcl.ExtCtrls;
+
+type
+    Tfrm_cadastro_contas_pagar2 = class(Tfrm_cadastro_contas_pagar)
+        procedure btn_filtrarClick(Sender: TObject);
+    private
+        { Private declarations }
+    public
+        { Public declarations }
+    end;
+
+var
+    frm_cadastro_contas_pagar2: Tfrm_cadastro_contas_pagar2;
+
+implementation
+
+{$R *.dfm}
+
+procedure Tfrm_cadastro_contas_pagar2.btn_filtrarClick(Sender: TObject);
+begin
+    if edt_pesquisar.Text = '' then
+    begin
+        Application.MessageBox('Informe um Valor a ser Pesquisado!', 'Atenção!',
+          MB_OK + MB_ICONWARNING);
+        edt_pesquisar.SetFocus;
+        Abort;
+    end;
+    inherited;
+    dm_1.CDS_contas_pagar.Close;
+    case cbx_filtros.ItemIndex of
+        0:
+            dm_1.CDS_contas_pagar.CommandText :=
+              'select * from contas_pagar where cntPg_nun_doc like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+        1:
+            dm_1.CDS_contas_pagar.CommandText :=
+              'select * from contas_pagar where cntPg_descricao like ' +
+              QuotedStr('%' + edt_pesquisar.Text + '%');
+    end;
+    dm_1.CDS_contas_pagar.Open;
+end;
+
+end.

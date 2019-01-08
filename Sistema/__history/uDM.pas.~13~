@@ -1,0 +1,87 @@
+unit uDM;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, Data.DBXMySQL, Data.FMTBcd, Data.DB,
+  Datasnap.DBClient, Datasnap.Provider, Data.SqlExpr;
+
+type
+  Tdm_1 = class(TDataModule)
+    con_conexao: TSQLConnection;
+    SQL_DT_SET_caixa: TSQLDataSet;
+    dtSetProv_caixa: TDataSetProvider;
+    CDS_caixa: TClientDataSet;
+    SQL_DT_SET_contas_pagar: TSQLDataSet;
+    dtSetProv_contas_pagar: TDataSetProvider;
+    CDS_contas_pagar: TClientDataSet;
+    SQL_DT_SET_contas_receber: TSQLDataSet;
+    dtSetProv_contas_receber: TDataSetProvider;
+    CDS_contas_receber: TClientDataSet;
+    SQL_DT_SET_usuarios: TSQLDataSet;
+    dtSetProv_usuarios: TDataSetProvider;
+    CDS_usuarios: TClientDataSet;
+    CDS_caixacx_id: TIntegerField;
+    CDS_caixacx_num_doc: TStringField;
+    CDS_caixacx_descricao: TStringField;
+    CDS_caixacx_valor: TFMTBCDField;
+    CDS_caixacx_tipo: TStringField;
+    CDS_caixacx_data_cadastro: TDateField;
+    intgrfldCLI_DT_SET_contas_recebercnRcb_id: TIntegerField;
+    strngfldCLI_DT_SET_contas_recebercntRcb_documento: TStringField;
+    strngfldCLI_DT_SET_contas_recebercntRcb_descricao: TStringField;
+    intgrfldCLI_DT_SET_contas_recebercntRcb_parcela: TIntegerField;
+    fmtbcdfldCLI_DT_SET_contas_recebercntRcb_vlr_parcela: TFMTBCDField;
+    fmtbcdfldCLI_DT_SET_contas_recebercntRcb_vlr_compra: TFMTBCDField;
+    fmtbcdfldCLI_DT_SET_contas_recebercntRcb_vlr_abatido: TFMTBCDField;
+    dtfldCLI_DT_SET_contas_recebercntRcb_dt_compra: TDateField;
+    dtfldCLI_DT_SET_contas_recebercntRcb_dt_vencimento: TDateField;
+    dtfldCLI_DT_SET_contas_recebercntRcb_dt_cadastro: TDateField;
+    strngfldCLI_DT_SET_contas_recebercntRcb_status: TStringField;
+    dtfldCLI_DT_SET_contas_recebercntRcb_dt_pagamento: TDateField;
+    CDS_usuarioscli_id: TIntegerField;
+    CDS_usuarioscli_nome: TStringField;
+    CDS_usuarioscli_login: TStringField;
+    CDS_usuarioscli_senha: TStringField;
+    CDS_usuarioscli_status: TStringField;
+    CDS_usuarioscli_data_cadastro: TDateField;
+    SQL_DT_SET_contas_pagarcntPg_id: TIntegerField;
+    SQL_DT_SET_contas_pagarcntPg_nun_doc: TStringField;
+    SQL_DT_SET_contas_pagarcntPg_descricao: TStringField;
+    SQL_DT_SET_contas_pagarcntPg_parcela: TIntegerField;
+    SQL_DT_SET_contas_pagarcntPg_vlr_parcela: TFMTBCDField;
+    SQL_DT_SET_contas_pagarcntPg_vlr_compra: TFMTBCDField;
+    SQL_DT_SET_contas_pagarcntPg_vlr_abatido: TFMTBCDField;
+    SQL_DT_SET_contas_pagarcntPg_dt_compra: TDateField;
+    SQL_DT_SET_contas_pagarcntPg_dt_cadastro: TDateField;
+    SQL_DT_SET_contas_pagarcntPg_vencimento: TDateField;
+    SQL_DT_SET_contas_pagarcntPg_dt_pagamento: TDateField;
+    SQL_DT_SET_contas_pagarcntPg_status: TStringField;
+    CDS_contas_pagarcntPg_id: TIntegerField;
+    CDS_contas_pagarcntPg_nun_doc: TStringField;
+    CDS_contas_pagarcntPg_descricao: TStringField;
+    CDS_contas_pagarcntPg_parcela: TIntegerField;
+    CDS_contas_pagarcntPg_vlr_parcela: TFMTBCDField;
+    CDS_contas_pagarcntPg_vlr_compra: TFMTBCDField;
+    CDS_contas_pagarcntPg_vlr_abatido: TFMTBCDField;
+    CDS_contas_pagarcntPg_dt_compra: TDateField;
+    CDS_contas_pagarcntPg_dt_cadastro: TDateField;
+    CDS_contas_pagarcntPg_vencimento: TDateField;
+    CDS_contas_pagarcntPg_dt_pagamento: TDateField;
+    CDS_contas_pagarcntPg_status: TStringField;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  dm_1: Tdm_1;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.
